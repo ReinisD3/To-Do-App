@@ -43,6 +43,9 @@ class TaskControllerTest extends TestCase
         $this->followingRedirects();
         $response = $this->post(route('tasks.store', $task));
         $response->assertStatus(200);
+
+        $this->assertDatabaseHas('tasks',['id'=>$task->id]);
+
     }
 
     public function test_controller_edit()
@@ -51,14 +54,36 @@ class TaskControllerTest extends TestCase
         $this->actingAs($user);
         $task = Task::factory()->create(['user_id'=>$user->id]);
         $this->followingRedirects();
+
         $response = $this->get(route('tasks.edit',$task));
+
         $response->assertStatus(200);
+        $this->assertDatabaseHas('tasks' , ['id' => $task->id]);
 
 
     }
 
     public function test_controller_delete()
     {
-        $this->actingAs(User::factory()->create());
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        $task = Task::factory()->create(['user_id'=> $user->id]);
+
+
+        $this->post(route('tasks.store', $task));
+        $this->followingRedirects();
+        $response = $this->delete(route('tasks.destroy',$task));
+
+        $response->assertStatus(200);
+        $this->assertDatabaseMissing('tasks',['id'=>$task->id]);
+
+    }
+    public function test_controller_toggleComplete()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $task = Task::factory()->create(['user_id'=> $user->id]);
+
     }
 }

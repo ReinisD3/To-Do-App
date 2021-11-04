@@ -14,7 +14,10 @@ class TaskController extends Controller
 
     public function index(): View
     {
-        return view('tasks/index', ['tasks' => Task::all()]);
+        $tasks = Task::where('user_id', auth()->user()->id)
+            ->orderBy('created_at', 'DESC')
+            ->get();
+        return view('tasks/index',['tasks' => $tasks]);
     }
 
 
@@ -75,10 +78,8 @@ class TaskController extends Controller
 
     public function complete(Task $task): RedirectResponse
     {
-        var_dump($task);
-        die;
         $task->update([
-            'completed_at' => now()
+            'completed_at' => $task->completed_at ? null : now()
         ]);
 
         return redirect()->back();
