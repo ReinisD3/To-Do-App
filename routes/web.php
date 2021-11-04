@@ -22,7 +22,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-Route::post('/tasks/{$task}/complete', [TaskController::class,'complete'])->middleware(['auth'])->name('tasks.complete');
+Route::get('/tasks/{task}/complete', [TaskController::class,'toggleComplete'])->middleware(['auth'])->name('tasks.toggleComplete');
 Route::resource('tasks', TaskController::class)->middleware(['auth'])->name('index','tasks');
 
 

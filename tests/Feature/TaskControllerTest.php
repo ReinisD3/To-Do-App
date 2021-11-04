@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Task;
 use App\Models\User;
+use http\Env\Request;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -47,7 +48,6 @@ class TaskControllerTest extends TestCase
         $this->assertDatabaseHas('tasks',['id'=>$task->id]);
 
     }
-
     public function test_controller_edit()
     {
         $user = User::factory()->create();
@@ -58,7 +58,28 @@ class TaskControllerTest extends TestCase
         $response = $this->get(route('tasks.edit',$task));
 
         $response->assertStatus(200);
-        $this->assertDatabaseHas('tasks' , ['id' => $task->id]);
+        $response->assertViewIs('tasks.edit');
+
+
+
+    }
+
+    public function test_controller_update()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        $task = Task::factory()->create(['user_id'=>$user->id]);
+        $this->post(route('tasks.store', $task));
+//        $request = (new \Illuminate\Http\Client\Request(['name'=>'TEST']));
+
+        $this->followingRedirects();
+
+        $response = $this->put(route('tasks.update', $task));
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('tasks' , [
+            'id' => $task->id ]  );
+//            'name'=> 'TEST']
+
 
 
     }
@@ -84,6 +105,14 @@ class TaskControllerTest extends TestCase
         $this->actingAs($user);
 
         $task = Task::factory()->create(['user_id'=> $user->id]);
+        $this->followingRedirects();
+        $response = $this->get(route('tasks.toggleComplete' , $task));
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('tasks',[
+            'id'=>$task->id,
+            'completed_at' => now()
+            ]);
 
     }
 }

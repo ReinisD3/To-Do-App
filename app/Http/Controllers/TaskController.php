@@ -76,12 +76,12 @@ class TaskController extends Controller
         return redirect()->route('tasks');
     }
 
-    public function complete(Task $task): RedirectResponse
+    public function toggleComplete(Task $task): RedirectResponse
     {
         $task->update([
             'completed_at' => $task->completed_at ? null : now()
         ]);
 
-        return redirect()->back();
+        return redirect()->route('tasks');
     }
 }

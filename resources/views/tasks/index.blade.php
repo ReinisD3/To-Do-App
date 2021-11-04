@@ -78,7 +78,8 @@
                                                 <label class="container">
 
                                                     <label class="some-style">
-                                                        <input type="checkbox" onclick="window.location='tasks/{{$task->id}}/complete'" />
+                                                        <input type="checkbox" onclick="window.location='{{route('tasks.toggleComplete', $task)}}'"
+                                                        @if($task->completed_at) checked @endif />
                                                         @if($task->completed_at) @endif
                                                             {{ $task->completed_at }}
                                                             @if($task->completed_at) @endif
